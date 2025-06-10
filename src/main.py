@@ -12,12 +12,6 @@ if not os.path.exists(WORKING_DIR):
     os.mkdir(WORKING_DIR)
 
 
-def complete(prompt, **kwargs):
-    # Remove the problematic argument
-    kwargs.pop("hashing_kv", None)
-    return ollama_model_complete(prompt, host="http://192.168.0.33:11434", **kwargs)
-
-
 async def init_rag():
     rag = LightRAG(
         working_dir=WORKING_DIR,
@@ -28,7 +22,9 @@ async def init_rag():
                 texts, host="http://192.168.0.33:11434", embed_model="bge-m3:latest"
             ),
         ),
-        llm_model_func=complete,
+        llm_model_func=lambda prompt, **kwargs: ollama_model_complete(
+            prompt, host="http://192.168.0.33:11434", **kwargs
+        ),
         llm_model_name="qwen2.5:14b",
         enable_llm_cache_for_entity_extract=True,
         kv_storage="PGKVStorage",
@@ -49,15 +45,19 @@ async def main():
             await rag.ainsert(f.read())
 
         # Perform hybrid search
-        query = rag.aquery(
-            "How to setup lsp",
+        query = await rag.aquery(
+            "Neovim lsp-defaults",
             param=QueryParam(
                 mode="hybrid",
-                # user_prompt="you will be provided with relevant information inside neovim manual, make sure your answer based on the result",
-                only_need_context=True,
+                # only_need_context=True,
+                stream=True,
             ),
         )
-        print(await query)
+        if isinstance(query, str):
+            print(query, end="", flush=True)
+        else:
+            async for part in query:
+                print(part, end="", flush=True)
 
     except Exception as e:
         print(f"An error occurred: {e}")
