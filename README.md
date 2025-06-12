@@ -1,4 +1,4 @@
-# Demo LightRAG Implementatino
+# Demo LightRAG Implementation
 
 ## Prerequisites
 
