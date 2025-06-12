@@ -46,10 +46,10 @@ async def main():
 
         # Perform hybrid search
         query = await rag.aquery(
-            "Neovim lsp-defaults",
+            "nvim lsp",
             param=QueryParam(
                 mode="hybrid",
-                # only_need_context=True,
+                only_need_context=True,
                 stream=True,
             ),
         )
@@ -62,6 +62,7 @@ async def main():
     except Exception as e:
         print(f"An error occurred: {e}")
     finally:
+        print()
         if rag:
             await rag.finalize_storages()
 
