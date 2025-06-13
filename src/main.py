@@ -1,5 +1,6 @@
 import os
 import asyncio
+from typing import AsyncIterator
 from lightrag import LightRAG, QueryParam
 from lightrag.llm.ollama import ollama_embed, ollama_model_complete
 from lightrag.kg.shared_storage import initialize_pipeline_status
@@ -38,26 +39,61 @@ async def init_rag():
 
 
 async def main():
-    try:
-        # Initialize RAG instance
-        rag = await init_rag()
-        with open(f"{WORKING_DIR}/test/lsp.txt", "r", encoding="utf-8") as f:
-            await rag.ainsert(f.read())
-
-        # Perform hybrid search
-        query = await rag.aquery(
-            "nvim lsp",
-            param=QueryParam(
-                mode="hybrid",
-                only_need_context=True,
-                stream=True,
-            ),
-        )
+    async def aprint(query: str | AsyncIterator[str]):
         if isinstance(query, str):
             print(query, end="", flush=True)
         else:
             async for part in query:
                 print(part, end="", flush=True)
+        print("")
+
+    try:
+        # Initialize RAG instance
+        rag = await init_rag()
+        with open(f"{WORKING_DIR}/test/book.txt", "r", encoding="utf-8") as f:
+            await rag.ainsert(f.read())
+
+        # Perform naive search
+        print("\n=====================")
+        print("Query mode: naive")
+        print("=====================")
+        await aprint(
+            await rag.aquery(
+                "What are the top themes in this story?", param=QueryParam(mode="naive")
+            )
+        )
+
+        # Perform local search
+        print("\n=====================")
+        print("Query mode: local")
+        print("=====================")
+        await aprint(
+            await rag.aquery(
+                "What are the top themes in this story?", param=QueryParam(mode="local")
+            )
+        )
+
+        # Perform global search
+        print("\n=====================")
+        print("Query mode: global")
+        print("=====================")
+        await aprint(
+            await rag.aquery(
+                "What are the top themes in this story?",
+                param=QueryParam(mode="global"),
+            )
+        )
+
+        # Perform hybrid search
+        print("\n=====================")
+        print("Query mode: hybrid")
+        print("=====================")
+        await aprint(
+            await rag.aquery(
+                "What are the top themes in this story?",
+                param=QueryParam(mode="hybrid"),
+            )
+        )
 
     except Exception as e:
         print(f"An error occurred: {e}")
