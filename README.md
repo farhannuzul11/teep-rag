@@ -30,3 +30,7 @@ POSTGRES_DATABASE=
 ```shell
 uv run src/main.py
 ```
+
+## Note
+
+RAG query other than `naive` might exceed the max token limit of the model, you may need to modify the model in that case.
