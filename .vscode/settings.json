@@ -2,5 +2,4 @@
     "files.exclude": {
         ".venv": true
     },
-    "debugpy.debugJustMyCode": false
 }

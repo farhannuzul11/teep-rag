@@ -57,11 +57,13 @@ async def main():
     try:
         # Initialize RAG instance
         rag = await init_rag()
-        with open(f"{WORKING_DIR}/book.txt", "r", encoding="utf-8") as f:
-            await rag.ainsert(f.read())
+        file = f"{WORKING_DIR}/book.txt"
+        with open(file, "r", encoding="utf-8") as f:
+            await rag.ainsert(f.read(), file_paths=file)
 
         query = "What are the top themes of the story?"
-        PartialQueryParam = partial(QueryParam, stream=True, only_need_prompt=True)
+        # PartialQueryParam = partial(QueryParam, stream=True, only_need_prompt=True)
+        PartialQueryParam = partial(QueryParam, stream=True)
 
         # Perform naive search
         print("\n=====================")
