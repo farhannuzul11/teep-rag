@@ -62,7 +62,7 @@ async def main():
             await rag.ainsert(f.read(), file_paths=file)
 
         query = "What are the top themes of the story?"
-        # PartialQueryParam = partial(QueryParam, stream=True, only_need_prompt=True)
+        # PartialQueryParam = partial(QueryParam, stream=True, only_need_context=True)
         PartialQueryParam = partial(QueryParam, stream=True)
 
         # Perform naive search
