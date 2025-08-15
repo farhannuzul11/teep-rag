@@ -18,7 +18,7 @@ if not os.path.exists(WORKING_DIR):
 async def init_rag() -> LightRAG:
     rag = LightRAG(
         working_dir=WORKING_DIR,
-        llm_model_name=os.getenv("LLM_MODEL", "qwen2.5:14b"),
+        llm_model_name=os.getenv("LLM_MODEL", "qwen2.5:3b"),
         llm_model_kwargs={
             "host": os.getenv("LLM_BINDING_HOST", "http://localhost:11434"),
             "options": {"num_ctx": int(os.getenv("MAX_TOKENS", 32768))},
@@ -28,7 +28,7 @@ async def init_rag() -> LightRAG:
             max_token_size=int(os.getenv("MAX_EMBED_TOKENS", 8192)),
             func=partial(
                 ollama_embed,
-                embed_model=os.getenv("EMBEDDING_MODEL", "bge-m3:latest"),
+                embed_model=os.getenv("EMBEDDING_MODEL", "qwen2.5:3b"),
                 host=os.getenv("EMBEDDING_BINDING_HOST", "http://localhost:11434"),
             ),
         ),
@@ -57,7 +57,7 @@ async def main():
     try:
         # Initialize RAG instance
         rag = await init_rag()
-        file = f"{WORKING_DIR}/book.txt"
+        file = f"{WORKING_DIR}/rag.txt"
         with open(file, "r", encoding="utf-8") as f:
             await rag.ainsert(f.read(), file_paths=file)
 
