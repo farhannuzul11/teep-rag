@@ -44,7 +44,6 @@ async def init_rag() -> LightRAG:
     await initialize_pipeline_status()
     return rag
 
-
 async def main():
     async def aprint(query: str | AsyncIterator[str]):
         if isinstance(query, str):

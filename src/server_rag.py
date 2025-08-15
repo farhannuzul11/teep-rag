@@ -22,13 +22,13 @@ rag: LightRAG = None
 
 class QueryRequest(BaseModel):
     query: str
-    
+
 @app.post("/query/local")
 async def query_local(req: QueryRequest):
     try:
         result = await rag.aquery(req.query, param=QueryParam(mode="local", stream=False))
         text = []
-        if hasattr(result, "__aiter__"): # Still dont know why this is needed
+        if hasattr(result, "__aiter__"):
             async for chunk in result:
                 text.append(chunk)
         else:
